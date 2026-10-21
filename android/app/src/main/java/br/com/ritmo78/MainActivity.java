@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 import androidx.core.content.FileProvider;
 import androidx.webkit.WebViewCompat;
+import androidx.webkit.WebViewAssetLoader;
 import androidx.webkit.WebViewFeature;
 import org.json.JSONObject;
 import java.io.File;
@@ -31,32 +32,35 @@ import java.util.HashSet;
 
 public class MainActivity extends Activity {
   private static final String SITE = "https://luisroxxx.github.io/Ritimo78/";
-  private static final String FALLBACK = "file:///android_asset/web/index.html";
+  private static final String FALLBACK = "https://appassets.androidplatform.net/assets/web/index.html";
   private WebView web;
   private ValueCallback<Uri[]> imageCallback;
   private Uri cameraUri;
   private boolean fallbackUsed = false;
+  private WebViewAssetLoader assetLoader;
   private static final int PICK = 77;
   @Override public void onCreate(Bundle b){
     super.onCreate(b);
     getWindow().setStatusBarColor(Color.rgb(12,48,41));
+    assetLoader = new WebViewAssetLoader.Builder().addPathHandler("/assets/",new WebViewAssetLoader.AssetsPathHandler(this)).build();
     web = new WebView(this); setContentView(web);
     WebSettings ws = web.getSettings();
     ws.setJavaScriptEnabled(true); ws.setDomStorageEnabled(true);
-    ws.setAllowFileAccess(true); ws.setAllowContentAccess(true);
+    ws.setAllowFileAccess(false); ws.setAllowContentAccess(true);
     ws.setMixedContentMode(WebSettings.MIXED_CONTENT_NEVER_ALLOW);
     if(WebViewFeature.isFeatureSupported(WebViewFeature.WEB_MESSAGE_LISTENER)){
       WebViewCompat.addWebMessageListener(web,"Ritmo78Android",
-        new HashSet<>(Arrays.asList("https://luisroxxx.github.io")),
+        new HashSet<>(Arrays.asList("https://luisroxxx.github.io","https://appassets.androidplatform.net")),
         (v,message,origin,isMainFrame,reply)->{
-          if(!isMainFrame || !SITE.equals(web.getUrl())) return;
+          if(!isMainFrame || !(web.getUrl()!=null && (web.getUrl().startsWith(SITE)||web.getUrl().startsWith(FALLBACK)))) return;
           runOnUiThread(()->handle(message.getData()));
         });
     }
     web.setWebViewClient(new WebViewClient(){
+      @Override public WebResourceResponse shouldInterceptRequest(WebView v, WebResourceRequest req){return assetLoader.shouldInterceptRequest(req.getUrl());}
       @Override public boolean shouldOverrideUrlLoading(WebView v, WebResourceRequest req){
         Uri u=req.getUrl();
-        if(u.toString().startsWith(SITE)) return false;
+        if(u.toString().startsWith(SITE)||u.toString().startsWith("https://appassets.androidplatform.net/assets/web/")) return false;
         if(req.isForMainFrame()){
           try {startActivity(new Intent(Intent.ACTION_VIEW,u));} catch(Exception ignored){}
         }
