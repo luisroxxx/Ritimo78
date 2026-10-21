@@ -18,6 +18,8 @@
     @media(max-width:1150px){.grid3{grid-template-columns:repeat(2,minmax(0,1fr))}.grid3 .card:last-child{grid-column:1/-1}.plannerweek{grid-template-columns:repeat(4,minmax(0,1fr))}.meal-feed{grid-template-columns:1fr}}
     @media(max-width:800px){.side{display:none}main{margin-left:0;width:100%;padding:24px 17px 105px}.grid2{grid-template-columns:1fr}.mobilebottom{display:flex;position:fixed;z-index:40;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);padding:9px 5px max(12px,env(safe-area-inset-bottom));justify-content:space-around;box-shadow:0 -4px 30px #00000009}.mobilebottom button{border:0;background:transparent;display:flex;flex-direction:column;align-items:center;gap:4px;color:#839389;font-size:10px;font-weight:750;min-width:60px}.mobilebottom button.active{color:#14794f}.mobilebottom span{font-size:21px}.profile span{display:none}.profile{padding:5px}.topbar{align-items:start}.hero{padding:23px}.hero h2{font-size:26px}.herostat{display:none}}
     @media(max-width:530px){.grid3{grid-template-columns:1fr}.grid3 .card:last-child{grid-column:auto}.plannerweek{grid-template-columns:repeat(2,minmax(0,1fr))}.formgrid{grid-template-columns:1fr}.card{padding:19px}.days{gap:4px}.day{padding:10px 2px}.day span{font-size:10px}.day strong{font-size:10px}.day em{font-size:14px}.meal-feed{grid-template-columns:1fr}.hero{min-height:180px}.hero h2{font-size:25px}.heading{align-items:start}.heading .btn{white-space:nowrap;padding:10px;font-size:11px}}
+
+    .r78-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:14px 0}.r78-metric{background:#f1f7ee;border:1px solid #dcead8;border-radius:15px;padding:15px}.r78-metric b{display:block;font-size:23px;color:#125b3c;margin:7px 0}.r78-metric span{font-size:11px;color:#627b67}.r78-pill{display:inline-block;border-radius:99px;background:#e7f5db;color:#276348;padding:6px 10px;font-size:11px;font-weight:800}.r78-month{width:100%;border-collapse:collapse;font-size:12px}.r78-month th,.r78-month td{text-align:left;padding:9px 7px;border-bottom:1px solid #e3eae3}.r78-month tr.today{background:#eff9ed}.r78-note{font-size:12px;line-height:1.6;color:#587362}.r78-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.r78-input{border:1px solid #dce6dd;border-radius:11px;padding:11px;max-width:100%;width:100%}.r78-action{margin-top:13px}.r78-consent{display:flex;align-items:start;gap:8px;font-size:12px;margin:10px 0;color:#52685d}.r78-ai-result{border:1px solid #dbebd9;background:#f4faf2;padding:13px;border-radius:12px;margin-top:11px}.r78-ai-result strong{color:#136a45}@media(max-width:620px){.r78-metrics{grid-template-columns:1fr 1fr}.r78-metrics .r78-metric:last-child{grid-column:1/-1}.r78-month{font-size:11px}.r78-month th,.r78-month td{padding:8px 3px}}
   </style>
 </head>
 <body>
@@ -43,6 +45,7 @@
         <div class="card"><div class="kpihead">Treino da semana <span class="iconbox">🏃</span></div><div class="big" id="dashRuns">0 <small>/ 3 sessões</small></div><div class="progress"><span id="dashRunBar" style="width:0%"></span></div><p class="help" id="dashRunText">Foco em constância, não velocidade.</p><button class="btn light small" data-go="planner">Ver plano de corrida</button></div>
         <div class="card"><div class="kpihead">Refeições registradas <span class="iconbox">🥗</span></div><div class="big" id="dashMeals">0 <small>hoje</small></div><div class="progress"><span id="dashMealBar" style="width:0%"></span></div><p class="help">Fotos e notas para acompanhar seus hábitos.</p><button class="btn light small" data-go="refeicoes">+ Adicionar refeição</button></div>
       </div>
+<div class="card" id="r78DailyCard" style="margin-top:19px"><div class="cardhead"><h2>🔥 Seu balanço do dia</h2><span class="r78-pill">ALIMENTAÇÃO + ÁGUA</span></div><div class="r78-metrics"><div class="r78-metric"><span>Calorias consumidas</span><b id="r78Consumed">—</b><span id="r78Counted">Registro de refeições</span></div><div class="r78-metric"><span>Restantes da meta</span><b id="r78Remaining">—</b><span id="r78Budget">Meta editável</span></div><div class="r78-metric"><span>Água registrada</span><b id="r78WaterDash">—</b><span id="r78WaterRemaining">Meta diária</span></div></div><p class="r78-note">O saldo considera apenas refeições com calorias preenchidas. Fotos sem estimativa não entram no total. Valores estimados podem ter erro — confirme ingredientes e porções.</p><button class="btn light small" data-go="refeicoes">Registrar uma refeição →</button></div>
       <div class="grid2">
         <div class="card"><div class="cardhead"><h2>Seu dia de hoje</h2><span class="tag" id="dateToday">HOJE</span></div><div id="agendaToday"></div><div class="tip"><span>💡</span><p><b>Seu ponto de partida:</b> você corre 2 km em cerca de 17–18 minutos. Evolua até 5 km com tranquilidade, alternando corrida e caminhada quando precisar.</p></div></div>
         <div class="card"><div class="cardhead"><h2>Sua semana</h2><span class="tag">MOVIMENTO</span></div><div class="days" id="weekOverview"></div><p class="help" style="margin-top:18px">Primeiro desenvolvemos resistência; depois buscamos quatro corridas semanais.</p><button class="btn ghost small" data-go="planner">Abrir planner completo →</button></div>
@@ -55,17 +58,20 @@
     </section>
     <section id="agua" class="section">
       <div class="grid2"><div class="card"><div class="between"><div class="eyebrow">HIDRATAÇÃO DE HOJE</div><span class="iconbox">💧</span></div><div class="waterbig"><span id="waterNow">0</span><span> / <span id="waterGoalShow">2500</span> ml</span></div><div class="waterdrops"><div id="waterBar" style="width:0%"></div></div><p class="help" id="waterPercent">0% da meta de hoje</p><div class="water-actions"><button class="water-btn" data-water="150">+ 150 ml</button><button class="water-btn" data-water="250">+ 250 ml</button><button class="water-btn" data-water="500">+ 500 ml</button></div><div style="margin-top:20px"><button class="btn ghost small" id="undoWater">↶ Desfazer último registro</button></div></div><div class="card"><div class="cardhead"><h2>Lembretes de água</h2><span class="tag">CONFIGURÁVEL</span></div><p class="help">Podemos emitir avisos enquanto esta página estiver aberta, conforme as permissões do navegador. A versão Lovable com notificações push exige configuração adicional.</p><div class="formgrid"><label class="field">Meta diária (ml)<input type="number" id="waterGoalInput" min="500" max="7000" step="100" /></label><label class="field">Intervalo dos lembretes<select id="reminderFrequency"><option value="60">A cada 60 minutos</option><option value="90">A cada 90 minutos</option><option value="120">A cada 120 minutos</option><option value="180">A cada 180 minutos</option></select></label></div><label class="switch"><input id="waterAlertEnabled" type="checkbox" /> Ativar lembretes de hidratação</label><button id="requestPermission" class="btn">🔔 Permitir notificações</button><p class="hint">Os horários padrão são entre 8h e 21h. A meta inicial é personalizável; não substitui orientação individual.</p></div></div>
+<div class="card" style="margin-top:19px"><div class="cardhead"><h2>Meta personalizada 💧</h2><span class="r78-pill">PERFIL</span></div><p class="help" id="r78WaterBasis">Preencha seu peso e idade no perfil para ter uma referência inicial.</p><div class="r78-row"><button class="btn light small" id="r78UseWaterEstimate">Aplicar referência de hidratação</button><button class="btn ghost small" data-go="config">Editar perfil</button></div><p class="r78-note">Referência simples de 30–35 ml/kg/dia para adultos, não uma necessidade médica calculada. Exercício, temperatura e condições clínicas podem alterar a indicação. Em caso de restrição de líquidos, siga orientação profissional.</p><label class="field" style="margin-top:12px">Registrar quantidade personalizada (ml)<input type="number" id="r78CustomWater" min="10" max="5000" value="1000"/></label><button class="btn light small r78-action" id="r78AddCustomWater">+ Registrar quantidade</button><div id="r78WaterMessage" class="r78-ai-result" style="margin-top:13px">O aplicativo calcula quanto falta e lembra a meta enquanto estiver aberto.</div></div>
       <div class="card" style="margin-top:19px"><h2>Histórico de hoje</h2><div id="waterHistory" class="weighlist" style="margin-top:13px"></div></div>
     </section>
     <section id="refeicoes" class="section">
-      <div class="grid2"><div class="card"><div class="cardhead"><h2>Registrar refeição</h2><span class="tag">DIÁRIO VISUAL</span></div><form id="mealForm"><div class="formgrid"><label class="field">Tipo de refeição<select id="mealType"><option>Café da manhã</option><option>Almoço</option><option>Lanche</option><option>Jantar</option><option>Ceia / sobremesa</option></select></label><label class="field">Data<input id="mealDate" type="date" required /></label></div><label class="field" style="margin-top:13px">Descrição da refeição<input id="mealDesc" maxlength="150" placeholder="Ex.: frango, arroz integral, feijão e brócolis" required /></label><div class="formgrid" style="margin-top:13px"><label class="field">Calorias (opcional)<input id="mealKcal" type="number" min="0" max="5000" placeholder="Estimativa manual" /></label><label class="field">Proteína (g, opcional)<input id="mealProtein" type="number" min="0" max="300" step="0.1" placeholder="Estimativa manual" /></label></div><label class="field" style="margin-top:13px">Observações<textarea id="mealNotes" maxlength="300" placeholder="Fome, saciedade, preparo ou mudanças no cardápio..."></textarea></label><div class="field" style="margin-top:13px">Foto da refeição<input id="mealPhoto" type="file" accept="image/*" capture="environment" style="display:none" /><button type="button" class="photo-drop" id="photoDrop"><span>📸</span><strong>Tirar foto ou escolher uma imagem</strong><small>Toque para abrir a câmera ou galeria</small></button></div><p class="hint">A foto é armazenada neste navegador, não enviada a nenhum servidor. O aplicativo não calcula calorias automaticamente por imagem.</p><div class="form-actions"><button class="btn" type="submit">Salvar refeição</button><button type="button" class="btn ghost" id="clearPhoto">Limpar foto</button></div></form></div><div class="card"><h2>Seu diário alimentar</h2><p class="help">Com o tempo você verá padrões no que come, sem precisar buscar perfeição em cada refeição.</p><label class="field" style="margin:14px 0">Mostrar dia<input type="date" id="mealFilter" /></label><div class="between" style="background:#f3f8ec;border-radius:11px;padding:12px;margin-bottom:13px"><span style="font-size:12px;color:#597763">Registros do dia</span><strong id="mealCountDay">0 refeições</strong></div><div id="mealFeed" class="meal-feed" style="grid-template-columns:1fr"></div></div></div>
+      <div class="grid2"><div class="card"><div class="cardhead"><h2>Registrar refeição</h2><span class="tag">DIÁRIO VISUAL</span></div><form id="mealForm"><div class="formgrid"><label class="field">Tipo de refeição<select id="mealType"><option>Café da manhã</option><option>Almoço</option><option>Lanche</option><option>Jantar</option><option>Ceia / sobremesa</option></select></label><label class="field">Data<input id="mealDate" type="date" required /></label></div><label class="field" style="margin-top:13px">Descrição da refeição<input id="mealDesc" maxlength="150" placeholder="Ex.: frango, arroz integral, feijão e brócolis" required /></label><div class="formgrid" style="margin-top:13px"><label class="field">Calorias (opcional)<input id="mealKcal" type="number" min="0" max="5000" placeholder="Estimativa manual" /></label><label class="field">Proteína (g, opcional)<input id="mealProtein" type="number" min="0" max="300" step="0.1" placeholder="Estimativa manual" /></label></div><label class="field" style="margin-top:13px">Observações<textarea id="mealNotes" maxlength="300" placeholder="Fome, saciedade, preparo ou mudanças no cardápio..."></textarea></label><div class="field" style="margin-top:13px">Foto da refeição<input id="mealPhoto" type="file" accept="image/*" capture="environment" style="display:none" /><button type="button" class="photo-drop" id="photoDrop"><span>📸</span><strong>Tirar foto ou escolher uma imagem</strong><small>Toque para abrir a câmera ou galeria</small></button></div><p class="hint">A foto fica neste dispositivo por padrão. O envio para IA ocorre somente com autorização explícita e serviço HTTPS configurado.</p><div class="form-actions"><button class="btn" type="submit">Salvar refeição</button><button type="button" class="btn ghost" id="clearPhoto">Limpar foto</button></div></form></div><div class="card"><h2>Seu diário alimentar</h2><p class="help">Com o tempo você verá padrões no que come, sem precisar buscar perfeição em cada refeição.</p><label class="field" style="margin:14px 0">Mostrar dia<input type="date" id="mealFilter" /></label><div class="between" style="background:#f3f8ec;border-radius:11px;padding:12px;margin-bottom:13px"><span style="font-size:12px;color:#597763">Registros do dia</span><strong id="mealCountDay">0 refeições</strong></div><div id="mealFeed" class="meal-feed" style="grid-template-columns:1fr"></div></div></div>
+<div class="card" style="margin-top:19px"><div class="cardhead"><h2>📸 Analisar foto da refeição</h2><span class="r78-pill">IA OPCIONAL</span></div><p class="r78-note">Após tirar a foto no formulário acima, toque em analisar. Uma IA poderá sugerir alimentos, porções, calorias e proteína. <strong>É uma estimativa visual, não uma medição:</strong> confirme quantidades, ingredientes e óleo/molhos antes de salvar.</p><label class="r78-consent"><input type="checkbox" id="r78PhotoConsent"/> Autorizo o envio desta foto ao serviço de análise configurado. Não enviar sem minha ação.</label><button type="button" id="r78AnalyzePhoto" class="btn">✨ Analisar foto com IA</button><div id="r78AIResult" class="r78-ai-result" aria-live="polite">A análise automática depende de um servidor seguro configurado pelo administrador. Nunca coloque chave de API no navegador.</div><div class="formgrid" style="margin-top:14px"><label class="field">Servidor HTTPS da análise (configuração avançada)<input type="url" id="r78AIEndpoint" placeholder="https://seu-servidor.com/api/analyze-meal"/></label><div style="display:flex;align-items:end"><button type="button" class="btn ghost small" id="r78SaveEndpoint">Salvar endereço</button></div></div><div style="border-top:1px solid #e3eae3;margin-top:17px;padding-top:14px"><strong style="font-size:13px">Sem IA? Estime por itens e porções</strong><p class="help">Opção manual aproximada para acompanhar o dia sem depender de serviços externos.</p><div class="formgrid"><label class="field">Alimento<select id="r78FoodItem"><option value="frango">Frango grelhado</option><option value="arroz">Arroz cozido</option><option value="feijao">Feijão cozido</option><option value="carne">Carne moída magra</option><option value="peixe">Tilápia grelhada</option><option value="brocolis">Brócolis cozidos</option><option value="batata">Batata-doce cozida</option><option value="ovo">Ovo cozido</option><option value="azeite">Azeite</option></select></label><label class="field">Porção (gramas)<input type="number" min="1" max="1500" step="1" value="100" id="r78FoodGrams"/></label></div><button type="button" class="btn light small r78-action" id="r78AddFood">+ Somar ao cálculo da refeição</button><div id="r78FoodEstimate" class="r78-note" style="margin-top:10px">Valores médios por 100 g; podem variar conforme preparo e produto.</div></div></div>
       <div class="card" style="margin-top:19px"><div class="cardhead"><h2>Referência do cardápio</h2><span class="tag">SIMPLES & REALISTA</span></div><div class="grid3" style="margin:0"><div><strong style="font-size:13px">🌤️ Café</strong><p class="help">2 ovos, pão integral, banana e café.</p></div><div><strong style="font-size:13px">🥗 Almoço</strong><p class="help">Proteína magra, arroz, feijão, salada e legumes.</p></div><div><strong style="font-size:13px">🌙 Jantar</strong><p class="help">Frango, peixe ou carne magra, carboidrato e legumes.</p></div></div><p class="hint">O cardápio é referência, não prescrição fechada. Quantidades e calorias devem ser individualizadas.</p></div>
+<div class="card" style="margin-top:19px"><div class="cardhead"><h2>📅 Alimentação e água no mês</h2><span class="r78-pill">HISTÓRICO DIÁRIO</span></div><div class="r78-row"><label class="field">Mês do resumo<input type="month" id="r78Month"/></label></div><div style="overflow-x:auto;margin-top:14px"><table class="r78-month"><thead><tr><th>Dia</th><th>Calorias</th><th>Água</th><th>Treino</th></tr></thead><tbody id="r78MonthlyRows"></tbody></table></div><p class="r78-note">Dias com refeições sem calorias informadas mostram apenas o total conhecido. Metas não substituem acompanhamento individual.</p></div>
     </section>
     <section id="progresso" class="section">
       <div class="grid3"><div class="card"><div class="kpihead">Peso de referência<span class="iconbox">⚖️</span></div><div class="big">95 <small>kg</small></div><p class="help">Ponto de partida do planejamento.</p></div><div class="card"><div class="kpihead">Última pesagem<span class="iconbox">📉</span></div><div class="big" id="lastWeight">— <small>kg</small></div><p class="help" id="weightDiff">Adicione uma pesagem para começar.</p></div><div class="card"><div class="kpihead">Objetivo desejado<span class="iconbox">🎯</span></div><div class="big">78 <small>kg</small></div><p class="help">Meta de longo prazo. Janeiro é uma etapa de evolução.</p></div></div>
       <div class="grid2"><div class="card"><div class="cardhead"><h2>Histórico de peso</h2><span class="tag">TENDÊNCIA</span></div><div class="chartbox" id="weightChart"></div><p class="hint">O peso varia de um dia para outro. A tendência ao longo de semanas é mais útil.</p></div><div class="card"><h2>Registrar pesagem</h2><form id="weightForm" class="formgrid" style="margin-top:18px"><label class="field">Data<input id="weightDate" type="date" required /></label><label class="field">Peso (kg)<input id="weightInput" type="number" min="20" max="400" step="0.1" placeholder="Ex.: 94.5" required /></label><div style="grid-column:1/-1"><button class="btn" type="submit">Salvar pesagem</button></div></form><div id="weightHistory" class="weighlist" style="margin-top:17px"></div></div></div>
     </section>
-    <section id="config" class="section"><div class="grid2"><div class="card"><div class="cardhead"><h2>Preferências</h2><span class="tag">SEU PLANO</span></div><p class="help">Ajuste os avisos e faça um backup para não perder seu histórico.</p><label class="switch"><input type="checkbox" id="mealAlertEnabled" /> Lembretes de refeições (com a página aberta)</label><label class="switch"><input type="checkbox" id="runAlertEnabled" /> Lembrete de treino (com a página aberta)</label><button class="btn light" id="exportData">↓ Exportar dados (JSON)</button><div class="settings-note"><strong>🔒 Privacidade e limitações</strong><br>Esta primeira versão salva os dados apenas neste dispositivo e navegador. Não há conta, sincronização entre celulares, análise de fotos por IA nem notificações com o app fechado. Para esses recursos, é necessário desenvolver o backend e o envio de notificações na versão Lovable.</div></div><div class="card"><h2>Sobre seu desafio</h2><div class="todayitem"><div class="time">INÍCIO</div><div><strong>20 de outubro de 2026</strong><small>95 kg • 1,76 m • corrida inicial de 2 km</small></div></div><div class="todayitem"><div class="time">ALVO</div><div><strong>31 de janeiro de 2027</strong><small>A meta de 78 kg deve ser perseguida com segurança, mesmo que exija mais tempo.</small></div></div><div class="todayitem"><div class="time">TREINO</div><div><strong>3 corridas + 1 caminhada no início</strong><small>Avançar gradualmente para 4 corridas semanais.</small></div></div><div class="tip"><span>💚</span><p><b>Lembrete:</b> seu desempenho na corrida, sono, disposição e recuperação importam tanto quanto o número na balança.</p></div></div></div></section>
+    <section id="config" class="section"><div class="card" style="margin-bottom:19px"><div class="cardhead"><h2>👤 Meu perfil e metas</h2><span class="r78-pill">PERSONALIZAR</span></div><form id="r78ProfileForm"><div class="formgrid"><label class="field">Nome<input id="r78Name" maxlength="50" placeholder="Como quer ser chamado"/></label><label class="field">Idade (anos)<input id="r78Age" type="number" min="18" max="110" placeholder="Ex.: 33"/></label><label class="field">Peso atual (kg)<input id="r78Weight" type="number" step="0.1" min="25" max="400" placeholder="Ex.: 95"/></label><label class="field">Meta de calorias/dia (kcal)<input id="r78CalorieGoal" type="number" step="50" min="1200" max="6000" placeholder="Ex.: 2100"/></label></div><p class="r78-note">A meta de calorias é definida pela pessoa/profissional, não calculada automaticamente pela foto ou idade. Evite metas excessivamente restritivas. A recomendação de água é apenas uma referência inicial.</p><button class="btn" type="submit">Salvar meu perfil</button></form></div><div class="grid2"><div class="card"><div class="cardhead"><h2>Preferências</h2><span class="tag">SEU PLANO</span></div><p class="help">Ajuste os avisos e faça um backup para não perder seu histórico.</p><label class="switch"><input type="checkbox" id="mealAlertEnabled" /> Lembretes de refeições (com a página aberta)</label><label class="switch"><input type="checkbox" id="runAlertEnabled" /> Lembrete de treino (com a página aberta)</label><button class="btn light" id="exportData">↓ Exportar dados (JSON)</button><div class="settings-note"><strong>🔒 Privacidade e limitações</strong><br>Os dados são salvos neste navegador. Fotos só são enviadas após consentimento e quando um servidor de análise por IA for configurado. Notificações com o aplicativo fechado no iPhone exigem um serviço de web push e autorização; alertas locais são limitados ao uso do app.</div></div><div class="card"><h2>Sobre seu desafio</h2><div class="todayitem"><div class="time">INÍCIO</div><div><strong>20 de outubro de 2026</strong><small>95 kg • 1,76 m • corrida inicial de 2 km</small></div></div><div class="todayitem"><div class="time">ALVO</div><div><strong>31 de janeiro de 2027</strong><small>A meta de 78 kg deve ser perseguida com segurança, mesmo que exija mais tempo.</small></div></div><div class="todayitem"><div class="time">TREINO</div><div><strong>3 corridas + 1 caminhada no início</strong><small>Avançar gradualmente para 4 corridas semanais.</small></div></div><div class="tip"><span>💚</span><p><b>Lembrete:</b> seu desempenho na corrida, sono, disposição e recuperação importam tanto quanto o número na balança.</p></div></div></div></section>
   </main>
 </div>
 <nav class="mobilebottom" id="navmobile"><button data-go="inicio" class="active"><span>⌂</span>Início</button><button data-go="planner"><span>🏃</span>Corrida</button><button data-go="agua"><span>💧</span>Água</button><button data-go="refeicoes"><span>🥗</span>Refeições</button><button data-go="progresso"><span>↗</span>Progresso</button><button data-go="config"><span>⚙</span>Ajustes</button></nav>
@@ -109,7 +115,7 @@ $('waterGoalInput').addEventListener('change',e=>{const val=Number(e.target.valu
 $('requestPermission').addEventListener('click',async()=>{if(!('Notification'in window))return notify('Notificações não são suportadas neste navegador.');if(!window.isSecureContext)return notify('Para notificações, abra o app em HTTPS ou localhost.');try{const p=await Notification.requestPermission();notify(p==='granted'?'Notificações permitidas.':'Permissão não concedida. Você verá os avisos dentro do app.')}catch{notify('Não foi possível ativar notificações neste ambiente.')}});
 function alertUser(title,body){if('Notification'in window&&Notification.permission==='granted'&&window.isSecureContext){try{new Notification(title,{body,icon:'./icon.svg'})}catch{notify(body)}}else notify(body)}
 function checkReminders(){const date=nowLocal(),dateTime=new Date(),hour=dateTime.getHours(),minutes=hour*60+dateTime.getMinutes();if(hour<8||hour>=21)return;const sent=state.reminderSent;
-if(state.settings.waterAlerts&&waterToday()<state.settings.waterGoal){const entries=state.water[date]||[];const last=entries.length?new Date(entries.at(-1).at).getTime():new Date(`${date}T08:00:00`).getTime();const key=`water:${date}:${Math.floor(minutes/state.settings.remindMinutes)}`;if(Date.now()-last>=state.settings.remindMinutes*60000&&!sent[key]){sent[key]=true;alertUser('Hora de se hidratar 💧','Uma pausa para beber água. Registre seu copo no Ritmo78.');save()}}
+if(state.settings.waterAlerts&&waterToday()<state.settings.waterGoal){const entries=state.water[date]||[];const last=entries.length?new Date(entries.at(-1).at).getTime():new Date(`${date}T08:00:00`).getTime();const key=`water:${date}:${Math.floor(minutes/state.settings.remindMinutes)}`;if(Date.now()-last>=state.settings.remindMinutes*60000&&!sent[key]){sent[key]=true;alertUser('Hora de se hidratar 💧','Você registrou '+waterToday()+' ml hoje. Faltam '+Math.max(0,state.settings.waterGoal-waterToday())+' ml para a meta. Registre seu próximo copo no Ritmo78.');save()}}
 if(state.settings.mealAlerts){for(const [at,title] of schedule.slice(1)){const [h,m]=at.split(':').map(Number),target=h*60+m,key=`meal:${date}:${at}`;if(minutes>=target&&minutes<target+8&&!sent[key]){sent[key]=true;alertUser('Hora de cuidar de você 🥗',`Lembrete: ${title.toLowerCase()}. Abra seu diário para registrar.`);save()}}}
 if(state.settings.runAlerts&&workoutFor(date)&&minutes>=8*60&&minutes<8*60+8&&!sent[`run:${date}`]){sent[`run:${date}`]=true;alertUser('Dia de movimento 🏃','Confira seu treino e vá no seu ritmo.');save()}}
 $('mealAlertEnabled').checked=state.settings.mealAlerts;$('runAlertEnabled').checked=state.settings.runAlerts;
@@ -140,6 +146,131 @@ else if(d.type==='notifications'||d.type==='healthError')notify(d.message||'Não
 };
 if(window.webkit?.messageHandlers?.ritmo78){const btn=document.createElement('button');btn.className='btn light';btn.type='button';btn.textContent='⌚ Importar corridas do Apple Saúde';btn.style.margin='14px 0';btn.addEventListener('click',()=>sendNative('syncRunning'));$('planner')?.prepend(btn)}
 if(nativeAndroid){const updateN=()=>sendNative('configureWaterReminders',{enabled:state.settings.waterAlerts,minutes:state.settings.remindMinutes});$('waterAlertEnabled')?.addEventListener('change',()=>setTimeout(updateN,0));$('reminderFrequency')?.addEventListener('change',()=>setTimeout(updateN,0));$('requestPermission')?.addEventListener('click',()=>sendNative('requestNotifications'))}
+
+
+/* Ritmo78 v0.5: perfil, hidratação e consumo alimentar */
+state.profile=Object.assign({name:'',age:null,weightKg:95,calorieGoal:2100},state.profile||{});
+function profileWeight(){const p=Number(state.profile.weightKg);return p>=25&&p<=400?p:95}
+function waterGuide(){return Math.round(profileWeight()*35/100)*100}
+function mealTarget(){return Math.max(1200,Math.min(6000,Number(state.profile.calorieGoal)||2100))}
+function hydrateProfile(){
+  $('r78Name').value=state.profile.name||'';
+  $('r78Age').value=state.profile.age||'';
+  $('r78Weight').value=state.profile.weightKg||'';
+  $('r78CalorieGoal').value=mealTarget();
+  $('r78WaterBasis').textContent='Para '+profileWeight().toLocaleString('pt-BR')+' kg, referência aproximada de '+Math.round(profileWeight()*30)+' a '+Math.round(profileWeight()*35)+' ml/dia (30–35 ml/kg). Ajuste com orientação individual.';
+}
+$('r78ProfileForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  const age=Number($('r78Age').value),weight=Number($('r78Weight').value),goal=Number($('r78CalorieGoal').value);
+  if(age<18||age>110||weight<25||weight>400||goal<1200||goal>6000)return notify('Confira idade, peso e meta calórica.');
+  state.profile={name:$('r78Name').value.trim().slice(0,50),age,weightKg:weight,calorieGoal:goal};
+  save();hydrateProfile();renderNutritionDashboard();notify('Perfil e metas atualizados. ✅');
+});
+$('r78UseWaterEstimate').addEventListener('click',()=>{
+  state.settings.waterGoal=waterGuide();save();$('waterGoalInput').value=state.settings.waterGoal;renderWater();renderOverview();renderNutritionDashboard();notify('Referência aplicada; você pode ajustar a meta. 💧');
+});
+$('r78AddCustomWater').addEventListener('click',()=>{
+  const ml=Number($('r78CustomWater').value);
+  if(!Number.isFinite(ml)||ml<10||ml>5000)return notify('Digite uma quantidade válida de água.');
+  addWater(ml);renderNutritionDashboard();
+});
+function waterStatus(){const n=waterToday(),g=state.settings.waterGoal,remain=Math.max(0,g-n);return n>=g?'🏅 Meta de água concluída!':n===0?'💧 Você ainda não registrou água hoje.':'💧 Faltam '+remain.toLocaleString('pt-BR')+' ml para completar sua meta.'}
+const baseRenderWater=renderWater;
+renderWater=function(){baseRenderWater();$('r78WaterMessage').textContent=waterStatus();renderNutritionDashboard();}
+const baseRenderOverview=renderOverview;
+renderOverview=function(){baseRenderOverview();renderNutritionDashboard()}
+const baseRenderMealDash=renderMealDash;
+renderMealDash=async function(){await baseRenderMealDash();await renderNutritionDashboard()}
+async function renderNutritionDashboard(){
+  const goal=mealTarget(),water=waterToday(),wg=state.settings.waterGoal;
+  $('r78WaterDash').textContent=(water/1000).toLocaleString('pt-BR',{maximumFractionDigits:2})+' L';
+  $('r78WaterRemaining').textContent=waterStatus();
+  $('r78Budget').textContent='Meta: '+goal.toLocaleString('pt-BR')+' kcal/dia';
+  try{
+    const meals=(await getMeals()).filter(m=>m.date===nowLocal());
+    const numeric=meals.filter(m=>m.kcal!==null&&m.kcal!==undefined&&Number.isFinite(Number(m.kcal)));
+    const total=numeric.reduce((v,m)=>v+Number(m.kcal),0);
+    const remaining=goal-total;
+    $('r78Consumed').textContent=total.toLocaleString('pt-BR')+' kcal';
+    $('r78Remaining').textContent=(remaining>=0?remaining.toLocaleString('pt-BR'):'+'+Math.abs(remaining).toLocaleString('pt-BR'))+' kcal';
+    $('r78Counted').textContent=numeric.length+' de '+meals.length+' refeições com calorias';
+    $('r78Remaining').style.color=remaining<0?'#b15c41':'#125b3c';
+  }catch{$('r78Consumed').textContent='—';$('r78Remaining').textContent='—'}
+}
+$('r78Month').value=nowLocal().slice(0,7);
+$('r78Month').addEventListener('change',renderMonthlyNutrition);
+async function renderMonthlyNutrition(){
+  const month=$('r78Month').value;
+  if(!/^\d{4}-\d{2}$/.test(month))return;
+  let meals=[];try{meals=await getMeals()}catch{}
+  const dayCount=new Date(Number(month.slice(0,4)),Number(month.slice(5)),0).getDate();
+  const rows=[];
+  for(let d=1;d<=dayCount;d++){
+    const date=month+'-'+String(d).padStart(2,'0');
+    const entries=meals.filter(m=>m.date===date),counted=entries.filter(m=>m.kcal!==null&&m.kcal!==undefined);
+    const total=counted.reduce((v,m)=>v+Number(m.kcal||0),0);
+    const water=(state.water[date]||[]).reduce((v,w)=>v+Number(w.ml||0),0);
+    const runs=state.runs.filter(r=>r.date===date);
+    const had=entries.length||water||runs.length||doneFor(date);
+    if(!had&&date!==nowLocal())continue;
+    rows.push('<tr class="'+(date===nowLocal()?'today':'')+'"><td>'+d+'/'+month.slice(5)+'</td><td>'+ (counted.length?total+' kcal'+(counted.length<entries.length?'*':''):entries.length?'Não informado':'—')+'</td><td>'+(water?water+' ml':'—')+'</td><td>'+(runs.length?runs.reduce((v,r)=>v+Number(r.km||0),0).toLocaleString('pt-BR')+' km':doneFor(date)?'✓':'—')+'</td></tr>');
+  }
+  $('r78MonthlyRows').innerHTML=rows.length?rows.join(''):'<tr><td colspan="4">Ainda não há registros nesse mês.</td></tr>';
+}
+const knownFoods={
+  frango:['Frango grelhado',165,31],arroz:['Arroz cozido',130,2.7],feijao:['Feijão cozido',85,5],carne:['Carne moída magra',200,26],peixe:['Tilápia grelhada',128,26],
+  brocolis:['Brócolis cozidos',35,2.4],batata:['Batata-doce cozida',86,1.6],ovo:['Ovo cozido',155,13],azeite:['Azeite',884,0]
+};
+$('r78AddFood').addEventListener('click',()=>{
+  const food=knownFoods[$('r78FoodItem').value],grams=Number($('r78FoodGrams').value);
+  if(!food||!Number.isFinite(grams)||grams<1||grams>1500)return notify('Informe uma quantidade válida.');
+  const kcal=Math.round(food[1]*grams/100),protein=Math.round(food[2]*grams)/100;
+  $('mealKcal').value=(Number($('mealKcal').value)||0)+kcal;
+  $('mealProtein').value=(Number($('mealProtein').value)||0)+protein;
+  const old=$('mealDesc').value.trim();
+  $('mealDesc').value=(old?old+', ':'')+food[0]+' ('+grams+' g)';
+  $('r78FoodEstimate').textContent='+ '+kcal+' kcal e '+protein.toLocaleString('pt-BR',{maximumFractionDigits:1})+' g proteína (tabela média aproximada). Revise as porções e os ingredientes antes de salvar.';
+});
+const AI_KEY='ritmo78_meal_ai_endpoint';
+$('r78AIEndpoint').value=localStorage.getItem(AI_KEY)||'';
+$('r78SaveEndpoint').addEventListener('click',()=>{
+  const endpoint=$('r78AIEndpoint').value.trim();
+  if(endpoint&&!/^https:\/\//i.test(endpoint))return notify('A URL precisa começar com https://');
+  try{if(endpoint&&new URL(endpoint).username)return notify('Não inclua credenciais na URL.')}catch{return notify('Confira o endereço do servidor.');}
+  localStorage.setItem(AI_KEY,endpoint);
+  notify(endpoint?'Servidor de análise salvo.':'Servidor removido.');
+});
+$('r78AnalyzePhoto').addEventListener('click',async()=>{
+  const file=$('mealPhoto').files[0],endpoint=localStorage.getItem(AI_KEY)||'';
+  if(!file)return notify('Tire ou selecione uma foto primeiro.');
+  if(!$('r78PhotoConsent').checked)return notify('Autorize explicitamente o envio da foto.');
+  if(!endpoint)return notify('A IA ainda não está conectada. Configure um servidor HTTPS primeiro.');
+  const button=$('r78AnalyzePhoto');button.disabled=true;
+  $('r78AIResult').textContent='Analisando a foto...';
+  try{
+    const photo=await compressImage(file);const body=new FormData();body.append('image',photo,'meal.jpg');
+    const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),30000);
+    let result;
+    try{result=await fetch(endpoint,{method:'POST',body,signal:controller.signal,credentials:'omit'});}finally{clearTimeout(timer)}
+    if(!result.ok)throw Error('Servidor respondeu com '+result.status);
+    const d=await result.json();
+    if(!Number.isFinite(Number(d.kcal))||Number(d.kcal)<0||Number(d.kcal)>5000||!Array.isArray(d.items))throw Error('Resposta da IA inválida.');
+    $('mealKcal').value=Math.round(Number(d.kcal));
+    if(Number.isFinite(Number(d.protein_g)))$('mealProtein').value=Math.round(Number(d.protein_g)*10)/10;
+    const detected=d.items.map(x=>String(x.name||'').slice(0,40)+(x.grams?' ('+Math.round(Number(x.grams))+' g)':'')).filter(Boolean).slice(0,12);
+    $('mealDesc').value=detected.join(', ').slice(0,150)||$('mealDesc').value;
+    $('r78AIResult').textContent='Estimativa da IA: '+Math.round(Number(d.kcal))+' kcal. '+detected.join(', ')+'. Revise e corrija as porções antes de salvar.';
+    notify('Análise recebida. Confirme os dados!');
+  }catch(err){$('r78AIResult').textContent='IA indisponível: '+err.message+'. Você pode continuar com o registro manual.'}
+  finally{button.disabled=false}
+});
+$('mealForm').addEventListener('submit',()=>{setTimeout(()=>{renderMonthlyNutrition();renderNutritionDashboard()},400)});
+const baseRenderPlanner=renderPlanner;
+renderPlanner=function(){baseRenderPlanner();renderMonthlyNutrition()}
+const baseRenderRuns=renderRuns;
+renderRuns=function(){baseRenderRuns();renderMonthlyNutrition()}
+hydrateProfile();renderNutritionDashboard();renderMonthlyNutrition();
 
 renderOverview();renderWater();renderPlanner();renderWeight();renderMealDash();checkReminders();setInterval(checkReminders,60000);if('serviceWorker'in navigator&&window.isSecureContext&&location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
 })();
